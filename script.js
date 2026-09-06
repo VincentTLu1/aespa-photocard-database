@@ -6,7 +6,7 @@ const filterButtons = document.querySelectorAll(".filter-button");
 let allCards = [];
 let activeFilter = "All";
 
-fetch("riftbound/cards.csv")
+fetch("aespa/cards.csv")
   .then((response) => response.text())
   .then((csvText) => {
     allCards = parseCSV(csvText);
@@ -29,8 +29,7 @@ function parseCSV(csvText) {
       card[header] = values[index]?.trim() || "";
     });
 
-    card.altArt = (card.altArt || "false").toLowerCase() === "true";
-    card.overnumbered = (card.overnumbered || "false").toLowerCase() === "true";
+    card.owned = (card.owned || "false").toLowerCase() === "true";
 
     return card;
   });
@@ -38,13 +37,13 @@ function parseCSV(csvText) {
 
 function renderCards(cards) {
   const filteredCards = cards.filter((card) => {
-    const matchesType = activeFilter === "All" || card.type.toLowerCase() === activeFilter.toLowerCase();
+    const matchesMember = activeFilter === "All" || card.member.toLowerCase() === activeFilter.toLowerCase();
     const searchText = searchBar.value.toLowerCase().trim();
 
     const matchesSearch = searchText === "" ||
-      `${card.name} ${card.set} ${card.type} ${card.color} ${card.altArt ? "alt art" : ""} ${card.overnumbered ? "overnumbered" : ""}`.toLowerCase().includes(searchText);
+      `${card.member} ${card.release} ${card.version}`.toLowerCase().includes(searchText);
 
-    return matchesType && matchesSearch;
+    return matchesMember && matchesSearch;
   });
 
   const sortedCards = sortCardsByNumber(filteredCards);
@@ -58,23 +57,19 @@ function renderCards(cards) {
   noResults.style.display = "none";
 
   cardRow.innerHTML = sortedCards.map((card) => {
-    const flags = [];
-    if (card.altArt) flags.push("Alt Art");
-    if (card.overnumbered) flags.push("Overnumbered");
-
     return `
-      <div class="col-6 col-md-4 col-lg-3 card-wrapper"
-           data-name="${card.name.toLowerCase()}"
-           data-set="${card.set.toLowerCase()}"
-           data-type="${card.type.toLowerCase()}"
-           data-color="${(card.color || "").toLowerCase()}">
+      <div class="col-6 col-md-4 col-lg-3 card-wrapper">
         <div class="card-custom">
-          <img src="riftbound-images/${card.image}" class="card-img${(card.type||'').toLowerCase() === 'battlefield' ? ' rotate-90' : ''}" alt="${card.name}">
+          <img
+            src="aespa-images/${card.image}"
+            class="card-img"
+            alt="${card.member} ${card.release} ${card.version}"
+          >
         </div>
         <div class="card-caption">
-          <strong>${card.name}</strong><br>
-          Quantity: ${card.quantity}<br>
-          Type: ${card.type}${flags.length ? `<br>${flags.join(" | ")}` : ""}
+          <strong>${card.member}</strong><br>
+          ${card.release} · ${card.version}<br>
+          ${card.owned ? "Owned" : "Not owned"}
         </div>
       </div>
     `;
@@ -82,48 +77,15 @@ function renderCards(cards) {
 }
 
 function sortCardsByNumber(cards) {
-  if (activeFilter === "All") {
-    const typePriority = {
-      unit: 1,
-      spell: 2,
-      legend: 3,
-      rune: 4,
-      gear: 5,
-      battlefield: 6,
-      token: 7,
-    };
-
-    return [...cards].sort((a, b) => {
-      const colorA = (a.color || "").split("&")[0].trim().toLowerCase();
-      const colorB = (b.color || "").split("&")[0].trim().toLowerCase();
-      if (colorA !== colorB) {
-        return colorA.localeCompare(colorB);
-      }
-
-      const typeA = (a.type || "").toLowerCase();
-      const typeB = (b.type || "").toLowerCase();
-      const priorityA = typePriority[typeA] ?? 99;
-      const priorityB = typePriority[typeB] ?? 99;
-      if (priorityA !== priorityB) {
-        return priorityA - priorityB;
-      }
-
-      return a.name.localeCompare(b.name);
-    });
-  }
-
   return [...cards].sort((a, b) => {
-    return a.name.localeCompare(b.name);
+    return a.id.localeCompare(b.id);
   });
 }
 
 function updateTotalCardCount(cards) {
-  const total = cards.reduce((sum, card) => {
-    const qty = parseInt(card.quantity, 10);
-    return sum + (isNaN(qty) ? 0 : qty);
-  }, 0);
+  const ownedCounter = cards.filter((card) => card.owned).length;
 
-  totalCardCount.textContent = `Total Cards: ${total}`;
+  totalCardCount.textContent = `Total Cards: ${cards.length} ~ Owned: ${ownedCounter}`;
 }
 
 searchBar.addEventListener("input", () => {
