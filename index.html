@@ -39,16 +39,27 @@
             <h6 id="totalCardCount" class="share-tech-regular-v2">Total Cards: 0</h6>
         </div>
 
-        <div class="container text-center">
-            <input class="form-control w-75 mx-auto searchBar" type="search" placeholder="Search by member, release, or version">
+    <div class="container mt-3">
+        <div class="row g-3">
+            <div class="col-12 col-md-8">
+                <label for="cardSearch" class="form-label">Search cards</label>
+                <input
+                    id="cardSearch"
+                    class="form-control searchBar"
+                    type="search"
+                    placeholder="Search by member, release, or version"
+                >
+            </div>
+    
+            <div class="col-12 col-md-4">
+                <label for="themeSelector" class="form-label">Theme</label>
+                <select id="themeSelector" class="form-select">
+                    <option value="minimal">Minimal</option>
+                    <option value="metallic">Metallic</option>
+                    <option value="pastel">Pastel</option>
+                </select>
+            </div>
         </div>
-    <div class="container text-center mt-3">
-        <label for="themeSelector" class="form-label">Theme</label>
-        <select id="themeSelector" class="form-select w-75 mx-auto">
-            <option value="minimal">Minimal</option>
-            <option value="metallic">Metallic</option>
-            <option value="pastel">Pastel</option>
-        </select>
     </div>
     <div class="container mt-3">
         <div class="row g-3">

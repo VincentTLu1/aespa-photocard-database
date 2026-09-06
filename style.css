@@ -65,9 +65,9 @@
 }
 
 .searchBar {
-  font-size: clamp(0.9rem, 1.5vw, 1.1rem);
-  padding: clamp(0.6rem, 1vw, 0.9rem);
-  margin-top: clamp(0.5rem, 2vw, 1.25rem);
+  font-size: 1rem;
+  /* padding: clamp(0.6rem, 1vw, 0.9rem);
+  margin-top: clamp(0.5rem, 2vw, 1.25rem); */
 }
 
 .animated-bg{
