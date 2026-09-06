@@ -75,6 +75,14 @@ function renderCards(cards) {
           <strong>${card.member}</strong><br>
           ${card.release} · ${card.version}<br>
           ${card.owned ? "Owned" : "Not owned"}
+          <br>
+          <button
+            type="button"
+            class="btn btn-outline-primary ownership-toggle mt-2"
+            data-id="${card.id}"
+          >
+            ${card.owned ? "Mark as not owned" : "Mark as owned"}
+          </button>
         </div>
       </div>
     `;
@@ -109,3 +117,18 @@ filterButtons.forEach((button) => {
 ownershipFilter.addEventListener("change", () => {
   renderCards(allCards);
 })
+
+cardRow.addEventListener("click", (event) => {
+    const btn = event.target.closest(".ownership-toggle");
+
+    if (!btn) return;
+
+    const card = allCards.find((card) => card.id === btn.dataset.id);
+
+    if (!card) return;
+
+    card.owned = !card.owned;
+
+    renderCards(allCards);
+    updateTotalCardCount(allCards);
+});

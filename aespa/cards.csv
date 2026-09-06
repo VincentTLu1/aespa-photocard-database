@@ -5,11 +5,11 @@ aespa-0003,Giselle, Rich Man,Energy,aespa-0003.webp,FALSE
 aespa-0004,Karina, Rich Man,Energy,aespa-0004.webp,FALSE
 aespa-0005,Winter,Dirty Work,Case B,aespa-0005.webp,FALSE
 aespa-0006,Ningning,Dirty Work,Case B,aespa-0006.webp,FALSE
-aespa-0007,Giselle,Dirty Work,Case B,aespa-0007.webp,true
+aespa-0007,Giselle,Dirty Work,Case A,aespa-0007.webp,FALSE
 aespa-0008,Karina,Dirty Work,Case B,aespa-0008.webp,FALSE
 aespa-0009,Winter,Rich Man,Burst,aespa-0009.webp,FALSE
 aespa-0010,Ningning,Rich Man,Burst,aespa-0010.webp,FALSE
-aespa-0011,Karina,Rich Man,Burst,aespa-0011.webp,true
+aespa-0011,Karina,Rich Man,Burst,aespa-0011.webp,FALSE
 aespa-0012,Giselle,Rich Man,Burst,aespa-0012.webp,FALSE
 aespa-0013,Giselle,Kiss N Tell,A Version,aespa-0013.webp,FALSE
 aespa-0014,Giselle,Kiss N Tell,A Version,aespa-0014.webp,FALSE
@@ -43,3 +43,18 @@ aespa-0041,Giselle,Kiss N Tell,B Version,aespa-0041.webp,FALSE
 aespa-0042,Winter,Kiss N Tell,B Version,aespa-0042.webp,FALSE
 aespa-0043,Ningning,Kiss N Tell,B Version,aespa-0043.webp,FALSE
 aespa-0044,Ningning,Kiss N Tell,B Version,aespa-0044.webp,FALSE
+aespa-0045,Giselle,Dirty Work,Case B,aespa-0045.webp,true
+aespa-0046,Winter,Dirty Work,Case A,aespa-0046.webp,FALSE
+aespa-0047,Ningning,Dirty Work,Case A,aespa-0047.webp,true
+aespa-0048,Karina,Dirty Work,Case A,aespa-0048.webp,FALSE
+aespa-0049,Ningning,Rich Man,Guitar Version,aespa-0049.webp,FALSE
+aespa-0050,Karina,Rich Man,Guitar Version,aespa-0050.webp,FALSE
+aespa-0051,Winter,Rich Man,Guitar Version,aespa-0051.webp,FALSE
+aespa-0052,Giselle,Rich Man,Guitar Version,aespa-0052.webp,FALSE
+aespa-0053,Karina,Rich Man,Guitar Version,aespa-0053.webp,FALSE
+aespa-0054,Giselle,Rich Man,Guitar Version,aespa-0054.webp,FALSE
+aespa-0055,Winter,Rich Man,Guitar Version,aespa-0055.webp,FALSE
+aespa-0056,Ningning,Rich Man,Guitar Version,aespa-0056.webp,FALSE
+
+
+
