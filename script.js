@@ -8,6 +8,18 @@ const ownershipstorageKey = "aespa-card-ownership";
 const releaseFilter = document.getElementById("releaseFilter");
 const resetFilters = document.getElementById("resetFilters");
 const themeSelector = document.getElementById("themeSelector");
+const themestorageKey = "aespa-theme";
+
+try {
+  const savedTheme = localStorage.getItem(themestorageKey);
+
+  if (["minimal", "metallic", "pastel"].includes(savedTheme)) {
+    document.documentElement.dataset.theme = savedTheme;
+    themeSelector.value = savedTheme;
+  }
+} catch (error) {
+  console.warn("Could not load saved theme:", error);
+}
 
 let allCards = [];
 let activeFilter = "All";
@@ -204,6 +216,18 @@ resetFilter.addEventListener("click", () => {
   renderCards(allCards);
 })
 
+// themeSelector.addEventListener("change", () => {
+//   document.documentElement.dataset.theme = themeSelector.value;
+// });
+
 themeSelector.addEventListener("change", () => {
-  document.documentElement.dataset.theme = themeSelector.value;
+
+  const selectedTheme = themeSelector.value;
+  document.documentElement.dataset.theme = selectedTheme;
+
+  try {
+    localStorage.setItem(themestorageKey, selectedTheme);
+  } catch (error) {
+    console.warn("Could not save theme:", error);
+  }
 });
