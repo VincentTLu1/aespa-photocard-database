@@ -32,7 +32,7 @@ fetch("aespa/cards.csv")
       console.warn("Could not load saved ownership:", error)
     }
     renderCards(allCards);
-    updateTotalCardCount(allCards);
+    //updateTotalCardCount(allCards);
   })
 
   .catch((error) => {
@@ -75,6 +75,7 @@ function renderCards(cards) {
   });
 
   const sortedCards = sortCardsByNumber(filteredCards);
+  updateTotalCardCount(allCards, sortedCards.length);
 
   if (sortedCards.length === 0) {
     cardRow.innerHTML = "";
@@ -118,10 +119,10 @@ function sortCardsByNumber(cards) {
   });
 }
 
-function updateTotalCardCount(cards) {
+function updateTotalCardCount(cards, visibleCount) {
   const ownedCounter = cards.filter((card) => card.owned).length;
 
-  totalCardCount.textContent = `Total Cards: ${cards.length} ~ Owned: ${ownedCounter}`;
+  totalCardCount.textContent = `Showing ${visibleCount} of ${cards.length} cards ~ Owned: ${ownedCounter}`;
 }
 
 function saveOwnership() {
@@ -178,7 +179,7 @@ cardRow.addEventListener("click", (event) => {
     saveOwnership();
 
     renderCards(allCards);
-    updateTotalCardCount(allCards);
+    //updateTotalCardCount(allCards);
 });
 
 releaseFilter.addEventListener("change", () => {
