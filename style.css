@@ -202,3 +202,28 @@ body {
 .btn:focus-visible {
   box-shadow: 0 0 0 0.25rem var(--focus-ring);
 }
+
+.card-custom {
+  border: 2px solid var(--border-color);
+}
+
+.is-owned .card-custom {
+  border-color: var(--accent);
+}
+
+.ownership-badge {
+  display: inline-block;
+  margin-top: 0.4rem;
+  padding: 0.2rem 0.6rem;
+  border: 1px solid var(--border-color);
+  border-radius: 999px;
+  color: var(--muted-color);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.is-owned .ownership-badge {
+  background-color: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-text);
+}

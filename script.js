@@ -6,7 +6,7 @@ const filterButtons = document.querySelectorAll(".filter-button");
 const ownershipFilter = document.getElementById("ownershipFilter")
 const ownershipstorageKey = "aespa-card-ownership";
 const releaseFilter = document.getElementById("releaseFilter");
-const resetFilters = document.getElementById("resetFilters");
+const resetFilter = document.getElementById("resetFilter");
 const themeSelector = document.getElementById("themeSelector");
 const themestorageKey = "aespa-theme";
 
@@ -101,7 +101,7 @@ function renderCards(cards) {
 
   cardRow.innerHTML = sortedCards.map((card) => {
     return `
-      <div class="col-6 col-md-4 col-lg-3 card-wrapper">
+      <div class="col-6 col-md-4 col-lg-3 card-wrapper ${card.owned ? "is-owned" : ""}">
         <div class="card-custom">
           <img
             src="aespa-images/${card.image}"
@@ -112,7 +112,9 @@ function renderCards(cards) {
         <div class="card-caption">
           <strong>${card.member}</strong><br>
           ${card.release} · ${card.version}<br>
-          ${card.owned ? "Owned" : "Not owned"}
+          <span class="ownership-badge">
+            ${card.owned ? "✓ Owned" : "Not owned"}
+          </span>
           <br>
           <button
             type="button"
