@@ -3,6 +3,7 @@ const cardRow = document.getElementById("cardRow");
 const noResults = document.getElementById("noResults");
 const totalCardCount = document.getElementById("totalCardCount");
 const filterButtons = document.querySelectorAll(".filter-button");
+const ownershipFilter = document.getElementById("ownershipFilter")
 let allCards = [];
 let activeFilter = "All";
 
@@ -43,7 +44,11 @@ function renderCards(cards) {
     const matchesSearch = searchText === "" ||
       `${card.member} ${card.release} ${card.version}`.toLowerCase().includes(searchText);
 
-    return matchesMember && matchesSearch;
+    const matchesOwnership = 
+      ownershipFilter.value === "all" || (ownershipFilter.value === "owned" && card.owned) ||
+      (ownershipFilter.value === "missing" && !card.owned);
+
+    return matchesMember && matchesSearch && matchesOwnership;
   });
 
   const sortedCards = sortCardsByNumber(filteredCards);
@@ -100,3 +105,7 @@ filterButtons.forEach((button) => {
     renderCards(allCards);
   });
 });
+
+ownershipFilter.addEventListener("change", () => {
+  renderCards(allCards);
+})

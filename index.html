@@ -42,7 +42,14 @@
         <div class="container text-center">
             <input class="form-control w-75 mx-auto searchBar" type="search" placeholder="Search by member, release, or version">
         </div>
-
+    <div class ="container text-center mt-3">
+        <label for= "ownershipFilter" class="form-label">Ownership</label>
+        <select id="ownershipFilter" class="form-select w-75 mx-auto">
+            <option value="all">All cards</option>
+            <option value="owned">Owned</option>
+            <option value="missing">Not owned</option>
+        </select>
+    </div>
         <div id="cardList" class="container pt-5">
             <div id="cardRow" class="row justify-content-center g-4"></div>
         </div>
