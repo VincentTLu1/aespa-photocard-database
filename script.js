@@ -9,6 +9,8 @@ const releaseFilter = document.getElementById("releaseFilter");
 const resetFilter = document.getElementById("resetFilter");
 const themeSelector = document.getElementById("themeSelector");
 const themestorageKey = "aespa-theme";
+const collectionProgress = document.getElementById("collectionProgress");
+const collectionProgressText = document.getElementById("collectionProgressText")
 
 try {
   const savedTheme = localStorage.getItem(themestorageKey);
@@ -138,7 +140,13 @@ function sortCardsByNumber(cards) {
 function updateTotalCardCount(cards, visibleCount) {
   const ownedCounter = cards.filter((card) => card.owned).length;
 
+  const percent = cards.length === 0 ? 0 : Math.round((ownedCounter / cards.length) * 100);
+
   totalCardCount.textContent = `Showing ${visibleCount} of ${cards.length} cards ~ Owned: ${ownedCounter}`;
+
+  collectionProgress.value = percent;
+
+  collectionProgressText.textContent = `${percent}% completed ~ ${cards.length - ownedCounter} cards remaining`;
 }
 
 function saveOwnership() {
