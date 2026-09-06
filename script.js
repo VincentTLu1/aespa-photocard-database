@@ -6,6 +6,7 @@ const filterButtons = document.querySelectorAll(".filter-button");
 const ownershipFilter = document.getElementById("ownershipFilter")
 const ownershipstorageKey = "aespa-card-ownership";
 const releaseFilter = document.getElementById("releaseFilter");
+const resetFilters = document.getElementById("resetFilters");
 
 let allCards = [];
 let activeFilter = "All";
@@ -185,3 +186,19 @@ cardRow.addEventListener("click", (event) => {
 releaseFilter.addEventListener("change", () => {
   renderCards(allCards);
 });
+
+resetFilter.addEventListener("click", () => {
+  searchBar.value = "";
+  activeFilter = "All";
+  releaseFilter.value = "all";
+  ownershipFilter.value = "all";
+
+  filterButtons.forEach((button) => {
+    button.classList.toggle(
+      "active",
+      button.dataset.filter === "All"
+    );
+  });
+
+  renderCards(allCards);
+})
