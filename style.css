@@ -1,3 +1,44 @@
+:root {
+  --page-bg: #f8f9fa;
+  --surface-bg: #ffffff;
+  --text-color: #202124;
+  --muted-color: #606770;
+  --accent: #334155;
+  --accent-text: #ffffff;
+  --border-color: #cbd5e1;
+  --card-bg: #e2e8f0;
+  --focus-ring: rgba(51, 65, 85, 0.3);
+  --card-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+:root[data-theme="metallic"] {
+  color-scheme: dark;
+  --page-bg: #101218;
+  --surface-bg: #1c202b;
+  --text-color: #edf0f7;
+  --muted-color: #b0b8ca;
+  --accent: #a9c7ff;
+  --accent-text: #101218;
+  --border-color: #515c72;
+  --card-bg: #262d3b;
+  --focus-ring: rgba(169, 199, 255, 0.4);
+  --card-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+}
+
+:root[data-theme="pastel"] {
+  color-scheme: light;
+  --page-bg: #fff1f7;
+  --surface-bg: #fffafd;
+  --text-color: #392c46;
+  --muted-color: #75617f;
+  --accent: #79529b;
+  --accent-text: #ffffff;
+  --border-color: #d9bddf;
+  --card-bg: #eeddf5;
+  --focus-ring: rgba(121, 82, 155, 0.3);
+  --card-shadow: 0 2px 10px rgba(94, 55, 113, 0.15);
+}
+
 .hero{
     width: 100%;
     height: auto;
@@ -59,7 +100,7 @@
   width:100%;
   aspect-ratio:5/7;
   border-radius:20px;
-  background-color:black;
+  background-color: var(--card-bg);
   transition: all 0.3s ease;
   overflow: hidden;
   position: relative;
@@ -93,13 +134,14 @@
 }
 
 .card-caption{
-    background:white;
+    background: var(--surface-bg);
+    color: var(--text-color);
     border-radius:10px;
     margin-top:10px;
     padding:8px 10px;
     font-size:14px;
     text-align:center;
-    box-shadow:0 2px 6px rgba(0,0,0,0.15);
+    box-shadow: var(--card-shadow);
 }
 
 .filter-buttons {
@@ -109,12 +151,54 @@
 }
 
 .filter-button.active {
-  background-color: #010400;
-  color: white;
+  background-color: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-text);
 }
 
 @media (max-width: 576px) {
   .filter-buttons {
     gap: 0.35rem;
   }
+}
+
+body {
+  background-color: var(--page-bg);
+  color: var(--text-color);
+}
+
+.form-control,
+.form-select {
+  background-color: var(--surface-bg);
+  color: var(--text-color);
+  border-color: var(--border-color);
+}
+
+.form-control::placeholder {
+  color: var(--muted-color);
+  opacity: 1;
+}
+
+.form-control:focus,
+.form-select:focus {
+  background-color: var(--surface-bg);
+  color: var(--text-color);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 0.25rem var(--focus-ring);
+}
+
+.btn-outline-primary,
+.btn-outline-secondary {
+  --bs-btn-color: var(--accent);
+  --bs-btn-border-color: var(--accent);
+  --bs-btn-hover-color: var(--accent-text);
+  --bs-btn-hover-bg: var(--accent);
+  --bs-btn-hover-border-color: var(--accent);
+  --bs-btn-active-color: var(--accent-text);
+  --bs-btn-active-bg: var(--accent);
+  --bs-btn-active-border-color: var(--accent);
+}
+
+.btn:focus-visible {
+  box-shadow: 0 0 0 0.25rem var(--focus-ring);
 }

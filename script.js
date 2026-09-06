@@ -7,6 +7,7 @@ const ownershipFilter = document.getElementById("ownershipFilter")
 const ownershipstorageKey = "aespa-card-ownership";
 const releaseFilter = document.getElementById("releaseFilter");
 const resetFilters = document.getElementById("resetFilters");
+const themeSelector = document.getElementById("themeSelector");
 
 let allCards = [];
 let activeFilter = "All";
@@ -202,3 +203,7 @@ resetFilter.addEventListener("click", () => {
 
   renderCards(allCards);
 })
+
+themeSelector.addEventListener("change", () => {
+  document.documentElement.dataset.theme = themeSelector.value;
+});
