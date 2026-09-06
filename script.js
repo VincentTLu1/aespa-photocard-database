@@ -14,6 +14,7 @@ fetch("aespa/cards.csv")
   .then((response) => response.text())
   .then((csvText) => {
     allCards = parseCSV(csvText);
+    populateReleaseFilter(allCards);
 
     try {
       const savedOwnership = JSON.parse(
@@ -68,7 +69,9 @@ function renderCards(cards) {
       ownershipFilter.value === "all" || (ownershipFilter.value === "owned" && card.owned) ||
       (ownershipFilter.value === "missing" && !card.owned);
 
-    return matchesMember && matchesSearch && matchesOwnership;
+    const matchesRelease = releaseFilter.value === "all" || card.release === releaseFilter.value;
+    
+    return matchesMember && matchesSearch && matchesOwnership && matchesRelease;
   });
 
   const sortedCards = sortCardsByNumber(filteredCards);
@@ -133,6 +136,17 @@ function saveOwnership() {
   );
 }
 
+function populateReleaseFilter(cards) {
+  const releases = [...new Set(cards.map((card) => card.release))];
+  releases.sort()
+
+  releaseFilter.replaceChildren(new Option("All releases", "all"));
+
+  releases.forEach((release) => {
+    releaseFilter.add(new Option(release, release));
+  });
+}
+
 searchBar.addEventListener("input", () => {
   renderCards(allCards);
 });
@@ -165,4 +179,8 @@ cardRow.addEventListener("click", (event) => {
 
     renderCards(allCards);
     updateTotalCardCount(allCards);
+});
+
+releaseFilter.addEventListener("change", () => {
+  renderCards(allCards);
 });
