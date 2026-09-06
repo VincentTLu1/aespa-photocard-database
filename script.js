@@ -4,6 +4,9 @@ const noResults = document.getElementById("noResults");
 const totalCardCount = document.getElementById("totalCardCount");
 const filterButtons = document.querySelectorAll(".filter-button");
 const ownershipFilter = document.getElementById("ownershipFilter")
+const ownershipstorageKey = "aespa-card-ownership";
+const releaseFilter = document.getElementById("releaseFilter");
+
 let allCards = [];
 let activeFilter = "All";
 
@@ -11,9 +14,26 @@ fetch("aespa/cards.csv")
   .then((response) => response.text())
   .then((csvText) => {
     allCards = parseCSV(csvText);
+
+    try {
+      const savedOwnership = JSON.parse(
+        localStorage.getItem(ownershipstorageKey) || "{}"
+      );
+
+      allCards.forEach((card) => {
+        if (typeof savedOwnership?.[card.id] === "boolean") {
+          card.owned = savedOwnership[card.id];
+        }
+      });
+    }
+    
+    catch (error) {
+      console.warn("Could not load saved ownership:", error)
+    }
     renderCards(allCards);
     updateTotalCardCount(allCards);
   })
+
   .catch((error) => {
     console.error("Error loading CSV:", error);
   });
@@ -101,6 +121,18 @@ function updateTotalCardCount(cards) {
   totalCardCount.textContent = `Total Cards: ${cards.length} ~ Owned: ${ownedCounter}`;
 }
 
+function saveOwnership() {
+  const ownership = {}
+
+  allCards.forEach((card) => {
+    ownership[card.id] = card.owned;
+  });
+
+  localStorage.setItem(
+    ownershipstorageKey,JSON.stringify(ownership)
+  );
+}
+
 searchBar.addEventListener("input", () => {
   renderCards(allCards);
 });
@@ -128,6 +160,8 @@ cardRow.addEventListener("click", (event) => {
     if (!card) return;
 
     card.owned = !card.owned;
+
+    saveOwnership();
 
     renderCards(allCards);
     updateTotalCardCount(allCards);
