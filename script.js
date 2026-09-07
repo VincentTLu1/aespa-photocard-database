@@ -10,7 +10,12 @@ const resetFilter = document.getElementById("resetFilter");
 const themeSelector = document.getElementById("themeSelector");
 const themestorageKey = "aespa-theme";
 const collectionProgress = document.getElementById("collectionProgress");
-const collectionProgressText = document.getElementById("collectionProgressText")
+const collectionProgressText = document.getElementById("collectionProgressText");
+const cardViewer = document.getElementById("cardViewer");
+const closeCardViewer = document.getElementById("closeCardViewer");
+const cardViewerTitle = document.getElementById("cardViewerTitle");
+const cardViewerImage = document.getElementById("cardViewerImage");
+const cardViewerDetails = document.getElementById("cardViewerDetails");
 
 try {
   const savedTheme = localStorage.getItem(themestorageKey);
@@ -104,13 +109,18 @@ function renderCards(cards) {
   cardRow.innerHTML = sortedCards.map((card) => {
     return `
       <div class="col-6 col-md-4 col-lg-3 card-wrapper ${card.owned ? "is-owned" : ""}">
-        <div class="card-custom">
-          <img
-            src="aespa-images/${card.image}"
-            class="card-img"
-            alt="${card.member} ${card.release} ${card.version}"
-          >
-        </div>
+        <button
+        type="button"
+        class="card-custom card-preview"
+        data-id="${card.id}"
+        aria-label="View ${card.member} ${card.release} ${card.version}"
+      >
+        <img
+          src="aespa-images/${card.image}"
+          class="card-img"
+          alt="${card.member} ${card.release} ${card.version}"
+        >
+      </button>
         <div class="card-caption">
           <strong>${card.member}</strong><br>
           ${card.release} · ${card.version}<br>
@@ -226,9 +236,6 @@ resetFilter.addEventListener("click", () => {
   renderCards(allCards);
 })
 
-// themeSelector.addEventListener("change", () => {
-//   document.documentElement.dataset.theme = themeSelector.value;
-// });
 
 themeSelector.addEventListener("change", () => {
 
@@ -240,4 +247,27 @@ themeSelector.addEventListener("change", () => {
   } catch (error) {
     console.warn("Could not save theme:", error);
   }
+});
+
+closeCardViewer.addEventListener("click", () => {
+  cardViewer.close();
+});
+
+cardRow.addEventListener("click", (event) => {
+  const preview = event.target.closest(".card-preview");
+  if (!preview) return;
+
+  const card = allCards.find((card) => card.id === preview.dataset.id);
+
+  if (!card) return;
+
+  cardViewerTitle.textContent = `${card.member} ~ ${card.release}`;
+  cardViewerImage.src = `aespa-images/${card.image}`;
+  cardViewerImage.alt =
+    `${card.member} ${card.release} ${card.version}`;
+
+  cardViewerDetails.textContent = 
+    `${card.version} ~ ${card.id} ~ ${card.owned ? "Owned" : "Not owned"}`;
+
+  cardViewer.showModal();
 });

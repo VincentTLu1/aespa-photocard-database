@@ -237,3 +237,44 @@ body {
   color: var(--muted-color);
   font-size: 0.9rem;
 }
+
+#cardViewer {
+  width: min(92vw, 520px);
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 1.25rem;
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  background: var(--surface-bg);
+  color: var(--text-color);
+}
+
+#cardViewer::backdrop {
+  background: rgba(0,0,0,0.7);
+}
+
+#cardViewerTitle {
+  margin-top: 1rem;
+  font-size: 1.4rem;
+}
+
+#cardViewerImage {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+}
+
+#cardViewerDetails {
+  margin-top: 1rem;
+}
+
+.card-preview {
+  padding: 0;
+  cursor: zoom-in;
+}
+
+.card-preview:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 4px;
+}
