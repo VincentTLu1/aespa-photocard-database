@@ -253,6 +253,19 @@ closeCardViewer.addEventListener("click", () => {
   cardViewer.close();
 });
 
+function openCardViewer(card) {
+  cardViewerTitle.textContent = `${card.member} ~ ${card.release}`;
+  cardViewerImage.src = `aespa-images/${card.image}`;
+
+  cardViewerImage.alt = `${card.member} ${card.release} ${card.version}`;
+
+  cardViewerDetails.textContent = `${card.version} ${card.id} ${card.owned ? "Owned" : "Not owned"}`;
+
+  if (!cardViewer.open) {
+    cardViewer.showModal();
+  }
+}
+
 cardRow.addEventListener("click", (event) => {
   const preview = event.target.closest(".card-preview");
   if (!preview) return;
@@ -261,13 +274,5 @@ cardRow.addEventListener("click", (event) => {
 
   if (!card) return;
 
-  cardViewerTitle.textContent = `${card.member} ~ ${card.release}`;
-  cardViewerImage.src = `aespa-images/${card.image}`;
-  cardViewerImage.alt =
-    `${card.member} ${card.release} ${card.version}`;
-
-  cardViewerDetails.textContent = 
-    `${card.version} ~ ${card.id} ~ ${card.owned ? "Owned" : "Not owned"}`;
-
-  cardViewer.showModal();
+  openCardViewer(card);
 });
