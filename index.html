@@ -19,6 +19,9 @@
             <div class="row d-flex align-items-center justify-content-center pt-5">
                 <div class="col-12">
                     <h1 class="text-center share-tech-regular">Vincent's Aespa Photocard Inventory</h1>
+                    <p class="collection-note">
+                        Browse all of aespa photocards and track your collection! Any saves will only be visible to your local browser and won't affect other users.
+                    </p>
                 </div>
             </div>
         </div>
@@ -103,6 +106,20 @@
         <h2 id="cardViewerTitle"></h2>
             <img id="cardViewerImage" alt="">
             <p id="cardViewerDetails"></p>
+            <div  class ="d-flex justify-content-between align-items-center gap-2 mt-3">
+                <button type="button" id="previousCard" class ="btn btn-outline-primary">
+                    Previous
+                </button>
+
+                <span id="viewerPosition" aria-live="polite"></span>
+
+                <button type="button" id="nextCard" class ="btn btn-outline-primary">
+                    Next
+                </button>
+            </div>
+        <p class="viewer-hint">
+            Use ← and → to browse. Press Escape to close.
+        </p>
     </dialog>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
     <script src="script.js"></script>

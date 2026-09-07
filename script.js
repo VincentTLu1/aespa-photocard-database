@@ -16,6 +16,10 @@ const closeCardViewer = document.getElementById("closeCardViewer");
 const cardViewerTitle = document.getElementById("cardViewerTitle");
 const cardViewerImage = document.getElementById("cardViewerImage");
 const cardViewerDetails = document.getElementById("cardViewerDetails");
+const previousCard = document.getElementById("previousCard");
+const nextCard = document.getElementById("nextCard");
+const viewerPosition = document.getElementById("viewerPosition");
+
 
 try {
   const savedTheme = localStorage.getItem(themestorageKey);
@@ -29,6 +33,8 @@ try {
 }
 
 let allCards = [];
+let visibleCards = [];
+let currentViewerIndex = -1;
 let activeFilter = "All";
 
 fetch("aespa/cards.csv")
@@ -96,6 +102,7 @@ function renderCards(cards) {
   });
 
   const sortedCards = sortCardsByNumber(filteredCards);
+  visibleCards = sortedCards;
   updateTotalCardCount(allCards, sortedCards.length);
 
   if (sortedCards.length === 0) {
@@ -254,12 +261,22 @@ closeCardViewer.addEventListener("click", () => {
 });
 
 function openCardViewer(card) {
+  currentViewerIndex = visibleCards.findIndex(
+    (visibleCard) => visibleCard.id === card.id
+  );
+
+  if (currentViewerIndex === -1) return;
+
   cardViewerTitle.textContent = `${card.member} ~ ${card.release}`;
   cardViewerImage.src = `aespa-images/${card.image}`;
 
   cardViewerImage.alt = `${card.member} ${card.release} ${card.version}`;
 
   cardViewerDetails.textContent = `${card.version} ${card.id} ${card.owned ? "Owned" : "Not owned"}`;
+  
+  viewerPosition.textContent = `${currentViewerIndex + 1} of ${visibleCards.length}`;
+  previousCard.disabled = currentViewerIndex === 0;
+  nextCard.disabled = currentViewerIndex === visibleCards.length === -1;
 
   if (!cardViewer.open) {
     cardViewer.showModal();
@@ -275,4 +292,31 @@ cardRow.addEventListener("click", (event) => {
   if (!card) return;
 
   openCardViewer(card);
+});
+
+previousCard.addEventListener("click", () => {
+  if (currentViewerIndex > 0) {
+    openCardViewer(visibleCards[currentViewerIndex - 1]);
+  }
+});
+
+nextCard.addEventListener("click", () => {
+  if (currentViewerIndex < visibleCards.length - 1) {
+    openCardViewer(visibleCards[currentViewerIndex + 1]);
+  }
+});
+
+cardViewer.addEventListener("keydown", (event) => {
+  if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) {
+    return;
+  }
+
+  if (event.key === "ArrowLeft") {
+    event.preventDefault();
+    previousCard.click();
+  }
+  else if (event.key === "ArrowRight"){
+    event.preventDefault();
+    nextCard.click();
+  }
 });
