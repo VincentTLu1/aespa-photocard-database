@@ -93,7 +93,17 @@
             <button type="button" id="resetFilter" class="btn btn-outline-secondary">
                 Reset filters
             </button>
+            <button type="button" id="exportCollection" class="btn btn-outline-secondary">
+                Export collection
+            </button>
+            <button type="button" id="importCollection" class="btn btn-outline-secondary">
+                Import collection
+            </button>
+            <input type="file" id="importCollectionFile" accept=".json,application/json" hidden>
         </div>
+        <p id="catalogStatus" class ="container text-center mt-3" role="status">
+            Loading cards...
+        </p>
         <div id="cardList" class="container pt-5">
             <div id="cardRow" class="row justify-content-center g-4"></div>
         </div>

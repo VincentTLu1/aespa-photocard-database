@@ -19,7 +19,10 @@ const cardViewerDetails = document.getElementById("cardViewerDetails");
 const previousCard = document.getElementById("previousCard");
 const nextCard = document.getElementById("nextCard");
 const viewerPosition = document.getElementById("viewerPosition");
-
+const exportCollection = document.getElementById("exportCollection");
+const importCollection = document.getElementById("importCollection");
+const importCollectionFile = document.getElementById("importCollectionFile");
+const catalogStatus = document.getElementById("catalogStatus")
 
 try {
   const savedTheme = localStorage.getItem(themestorageKey);
@@ -38,7 +41,13 @@ let currentViewerIndex = -1;
 let activeFilter = "All";
 
 fetch("aespa/cards.csv")
-  .then((response) => response.text())
+  .then((response) => {
+    if (!response.ok) {
+      throw new Error(`Could not load cards: ${response.status}`);
+    }
+  return response.text();
+  })
+
   .then((csvText) => {
     allCards = parseCSV(csvText);
     populateReleaseFilter(allCards);
@@ -59,11 +68,14 @@ fetch("aespa/cards.csv")
       console.warn("Could not load saved ownership:", error)
     }
     renderCards(allCards);
-    //updateTotalCardCount(allCards);
+    catalogStatus.hidden = true;
   })
 
   .catch((error) => {
-    console.error("Error loading CSV:", error);
+    console.error("Error loading catalog:", error);
+    catalogStatus.hidden = false;
+
+    catalogStatus.textContent = "We couldn't load the card catalog! Please refresh and try again!";
   });
 
 function parseCSV(csvText) {
@@ -173,9 +185,16 @@ function saveOwnership() {
     ownership[card.id] = card.owned;
   });
 
-  localStorage.setItem(
-    ownershipstorageKey,JSON.stringify(ownership)
-  );
+  try {
+    localStorage.setItem(
+      ownershipstorageKey,JSON.stringify(ownership)
+    );
+  return true;
+
+  } catch (error) {
+    console.error("Could not save ownership:", error)
+    return false;
+  }
 }
 
 function populateReleaseFilter(cards) {
@@ -215,9 +234,17 @@ cardRow.addEventListener("click", (event) => {
 
     if (!card) return;
 
+    const previousOwned = card.owned;
+
     card.owned = !card.owned;
 
-    saveOwnership();
+    if (!saveOwnership()) {
+      card.owned = previousOwned;
+
+      alert("Your ownership change could not be saved. " + "Please check that browser storage is available and try again.");
+    
+      return;
+    }
 
     renderCards(allCards);
     //updateTotalCardCount(allCards);
@@ -276,7 +303,7 @@ function openCardViewer(card) {
   
   viewerPosition.textContent = `${currentViewerIndex + 1} of ${visibleCards.length}`;
   previousCard.disabled = currentViewerIndex === 0;
-  nextCard.disabled = currentViewerIndex === visibleCards.length === -1;
+  nextCard.disabled = currentViewerIndex === visibleCards.length - 1;
 
   if (!cardViewer.open) {
     cardViewer.showModal();
@@ -320,3 +347,115 @@ cardViewer.addEventListener("keydown", (event) => {
     nextCard.click();
   }
 });
+
+exportCollection.addEventListener("click", () => {
+  if (allCards.length === 0) {
+    alert("Wait until all the cards have loaded before exporting.");
+    return;
+  }
+
+  const ownership = {};
+
+  allCards.forEach((card) => {
+    ownership[card.id] = card.owned;
+  });
+
+  const backup = {
+    format: "aespa-collection",
+    version: 1,
+    exportedAt: new Date().toISOString(), ownership
+  };
+
+  const file = new Blob(
+    [JSON.stringify(backup, null, 2)],
+    {
+      type: "application/json"
+    }
+  );
+
+  const url = URL.createObjectURL(file);
+  const link = document.createElement("a");
+
+  link.href = url;
+  link.download = "aespa-collection-backup.json"
+
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+});
+
+importCollection.addEventListener("click", () => {
+  if (allCards.length === 0) {
+    alert("Wait until all the cards have loaded before importing");
+    return;
+  }
+
+  importCollectionFile.click();
+});
+
+importCollectionFile.addEventListener("change", async () => {
+  const file = importCollectionFile.files[0];
+
+  if (!file) return;
+
+  try {
+    const backup = JSON.parse(await file.text());
+
+    if (
+      !backup || backup.format !== "aespa-collection" || backup.version !== 1 || !backup.ownership || typeof backup.ownership !== "object" || Array.isArray(backup.ownership)
+    )
+    {
+      throw new Error("This is not a support aespa collection backup!");
+    }
+  
+  const entries = Object.entries(backup.ownership);
+
+  if (!entries.every(([id, owned]) =>
+    id.length > 0 && typeof owned === "boolean"
+  )) {
+    throw new Error("This backup contains invalid ownership values!");
+  }
+
+  const matchingCards = allCards.filter((card) =>
+  Object.hasOwn(backup.ownership, card.id)
+  );
+
+  if (matchingCards.length === 0) {
+    throw new Error("No card IDs in this backup match the current catalog");
+  }
+
+  const approved = confirm(`Replace current ownership choice for ${matchingCards.length} matching cards? ` + "Cards missing from the backup will keep their current status");
+
+  if (!approved) return;
+
+  const updatedCards = allCards.map((card) => ({
+    ...card, owned:Object.hasOwn(backup.ownership, card.id)
+    ? backup.ownership[card.id]
+    : card.owned
+  }));
+
+  const ownership = {}
+
+  updatedCards.forEach((card) => {
+    ownership[card.id] = card.owned;
+  });
+
+  localStorage.setItem(
+    ownershipstorageKey,
+    JSON.stringify(ownership)
+  );
+
+  allCards = updatedCards;
+  renderCards(allCards);
+
+  alert("Collection imported and saved!");
+
+} catch(error) {
+  alert(`Could not import the backup: ${error.message}`);
+} finally {
+  importCollectionFile.value = "";
+}
+
+})
