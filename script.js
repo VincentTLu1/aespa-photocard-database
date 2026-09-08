@@ -22,7 +22,9 @@ const viewerPosition = document.getElementById("viewerPosition");
 const exportCollection = document.getElementById("exportCollection");
 const importCollection = document.getElementById("importCollection");
 const importCollectionFile = document.getElementById("importCollectionFile");
-const catalogStatus = document.getElementById("catalogStatus")
+const catalogStatus = document.getElementById("catalogStatus");
+const wishlistStorageKey = "aespa-card-wishlist";
+const wishlistFilter = document.getElementById("wishlistFilter");
 
 try {
   const savedTheme = localStorage.getItem(themestorageKey);
@@ -67,6 +69,22 @@ fetch("aespa/cards.csv")
     catch (error) {
       console.warn("Could not load saved ownership:", error)
     }
+
+    try {
+      const savedWishlist = JSON.parse(
+        localStorage.getItem(wishlistStorageKey) || "{}"
+      );
+
+      allCards.forEach((card) => {
+        if (typeof savedWishlist?.[card.id] === "boolean") {
+          card.wishlisted = savedWishlist[card.id];
+        }
+      });
+    }
+
+    catch(error) {
+      console.warn("Could not load saved wishlist:", error)
+    }
     renderCards(allCards);
     catalogStatus.hidden = true;
   })
@@ -92,6 +110,8 @@ function parseCSV(csvText) {
 
     card.owned = (card.owned || "false").toLowerCase() === "true";
 
+    card.wishlisted = false;
+
     return card;
   });
 }
@@ -109,8 +129,10 @@ function renderCards(cards) {
       (ownershipFilter.value === "missing" && !card.owned);
 
     const matchesRelease = releaseFilter.value === "all" || card.release === releaseFilter.value;
+
+    const matchesWishlist = !wishlistFilter.checked || card.wishlisted;
     
-    return matchesMember && matchesSearch && matchesOwnership && matchesRelease;
+    return matchesMember && matchesSearch && matchesOwnership && matchesRelease && matchesWishlist;
   });
 
   const sortedCards = sortCardsByNumber(filteredCards);
@@ -146,6 +168,7 @@ function renderCards(cards) {
           <span class="ownership-badge">
             ${card.owned ? "✓ Owned" : "Not owned"}
           </span>
+          ${card.wishlisted ? '<span class="wishlist-badge"> ♡ Wishlist</span>' : ""}
           <br>
           <button
             type="button"
@@ -153,6 +176,15 @@ function renderCards(cards) {
             data-id="${card.id}"
           >
             ${card.owned ? "Mark as not owned" : "Mark as owned"}
+          </button>
+          <br>
+          <button
+            type="button"
+            class="btn btn-outline-secondary wishlist-toggle mt-2"
+            data-id="${card.id}"
+            aria-pressed="${card.wishlisted}"
+          >
+            ${card.wishlisted ? "Remove from wishlist" : "Add to wishlist"}
           </button>
         </div>
       </div>
@@ -168,10 +200,12 @@ function sortCardsByNumber(cards) {
 
 function updateTotalCardCount(cards, visibleCount) {
   const ownedCounter = cards.filter((card) => card.owned).length;
+  const wishlistCount = cards.filter((card) => card.wishlisted).length;
+
 
   const percent = cards.length === 0 ? 0 : Math.round((ownedCounter / cards.length) * 100);
 
-  totalCardCount.textContent = `Showing ${visibleCount} of ${cards.length} cards ~ Owned: ${ownedCounter}`;
+  totalCardCount.textContent = `Showing ${visibleCount} of ${cards.length} cards ~ Owned: ${ownedCounter} ~ Wishlist: ${wishlistCount}`;
 
   collectionProgress.value = percent;
 
@@ -259,6 +293,7 @@ resetFilter.addEventListener("click", () => {
   activeFilter = "All";
   releaseFilter.value = "all";
   ownershipFilter.value = "all";
+  wishlistFilter.checked = false;
 
   filterButtons.forEach((button) => {
     button.classList.toggle(
@@ -355,15 +390,17 @@ exportCollection.addEventListener("click", () => {
   }
 
   const ownership = {};
+  const wishlist ={}
 
   allCards.forEach((card) => {
     ownership[card.id] = card.owned;
+    wishlist[card.id] = card.wishlisted;
   });
 
   const backup = {
     format: "aespa-collection",
-    version: 1,
-    exportedAt: new Date().toISOString(), ownership
+    version: 2,
+    exportedAt: new Date().toISOString(), ownership, wishlist
   };
 
   const file = new Blob(
@@ -404,48 +441,57 @@ importCollectionFile.addEventListener("change", async () => {
     const backup = JSON.parse(await file.text());
 
     if (
-      !backup || backup.format !== "aespa-collection" || backup.version !== 1 || !backup.ownership || typeof backup.ownership !== "object" || Array.isArray(backup.ownership)
+      !backup || backup.format !== "aespa-collection" || ![1,2].includes(backup.version)
     )
     {
       throw new Error("This is not a support aespa collection backup!");
     }
   
-  const entries = Object.entries(backup.ownership);
+    if (!isValidcardChoices(backup.ownership)) {
+      throw new Error("The backup contains invalid ownership values!")
+    }
 
-  if (!entries.every(([id, owned]) =>
-    id.length > 0 && typeof owned === "boolean"
-  )) {
-    throw new Error("This backup contains invalid ownership values!");
-  }
+    if (backup.version === 2 && !isValidcardChoices(backup.wishlist)) {
+      throw new Error("The backup contains invalid wishlist values")
+    }
+
+  const importedWishlist = backup.version === 2 ? backup.wishlist : {};
 
   const matchingCards = allCards.filter((card) =>
-  Object.hasOwn(backup.ownership, card.id)
+  Object.hasOwn(backup.ownership, card.id) ||
+  Object.hasOwn(importedWishlist, card.id)
   );
 
   if (matchingCards.length === 0) {
     throw new Error("No card IDs in this backup match the current catalog");
   }
 
-  const approved = confirm(`Replace current ownership choice for ${matchingCards.length} matching cards? ` + "Cards missing from the backup will keep their current status");
+  const choicesLabel = backup.version === 2
+  ? "ownership and wishlist choices"
+  : "ownership choices";
+
+  const approved = confirm(`Import ${choicesLabel} for ${matchingCards.length} cards? ` + "Cards missing from the backup will keep their current status");
 
   if (!approved) return;
 
   const updatedCards = allCards.map((card) => ({
     ...card, owned:Object.hasOwn(backup.ownership, card.id)
     ? backup.ownership[card.id]
-    : card.owned
+    : card.owned,
+    wishlisted: Object.hasOwn(importedWishlist, card.id)
+    ? importedWishlist[card.id]
+    : card.wishlisted
   }));
 
   const ownership = {}
+  const wishlist = {}
 
   updatedCards.forEach((card) => {
     ownership[card.id] = card.owned;
+    wishlist[card.id] = card.wishlisted;
   });
 
-  localStorage.setItem(
-    ownershipstorageKey,
-    JSON.stringify(ownership)
-  );
+  saveImportedChoices(ownership, wishlist);
 
   allCards = updatedCards;
   renderCards(allCards);
@@ -459,3 +505,80 @@ importCollectionFile.addEventListener("change", async () => {
 }
 
 })
+
+cardRow.addEventListener("click", (event) => {
+  const button = event.target.closest(".wishlist-toggle");
+
+  if (!button) return;
+
+  const card = allCards.find((card) => card.id === button.dataset.id);
+
+  if (!card) return;
+  
+  const previousWishlisted = card.wishlisted;
+
+  card.wishlisted = !card.wishlisted;
+
+  if (!saveWishlist()) {
+    card.wishlisted = previousWishlisted;
+    alert("Your wishlist change could not be saved. Try again");
+    return;
+  }
+
+  renderCards(allCards);
+});
+
+function saveWishlist() {
+  const wishlist = {};
+
+  allCards.forEach((card) => {
+    wishlist[card.id] = card.wishlisted;
+  })
+
+  try {
+    localStorage.setItem(
+      wishlistStorageKey,
+      JSON.stringify(wishlist)
+    );
+    return true;
+  }
+  catch (error) {
+    console.error("Could not save wishlist:", error);
+    return false;
+  }
+}
+
+wishlistFilter.addEventListener("change", () => {
+  renderCards(allCards);
+});
+
+function isValidcardChoices(choices){
+  return choices !== null &&
+  typeof choices === "object" && !Array.isArray(choices) && Object.entries(choices).every(([id, value]) => 
+  id.trim().length > 0 && typeof value === "boolean"
+  );
+}
+
+function saveImportedChoices(ownership, wishlist) {
+  const ownershipJSON = JSON.stringify(ownership);
+  const wishlistJSON = JSON.stringify(wishlist);
+  const previousWishlist = localStorage.getItem(wishlistStorageKey);
+
+  localStorage.setItem(wishlistStorageKey, wishlistJSON);
+
+  try {
+    localStorage.setItem(ownershipstorageKey, ownershipJSON);
+  } catch (error) {
+    try {
+      if (previousWishlist === null) {
+        localStorage.removeItem(wishlistStorageKey);
+      } else {
+        localStorage.setItem(wishlistStorageKey, previousWishlist);
+      }
+    } catch (restoreError) {
+        console.error("Could not restore wishlist:", restoreError);
+        throw new Error("Import only partially saved. Export only the current collection before refreshing to preserve your choices.");
+    }
+    throw error;
+  }
+}

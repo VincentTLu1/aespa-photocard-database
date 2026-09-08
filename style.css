@@ -295,3 +295,14 @@ body {
   line-height: 1.6;
   text-align: center;
 }
+
+.wishlist-badge {
+  display: incline-block;
+  margin-top: 0.4rem;
+  padding: 0.2rem 0.6rem;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  color: var(--accent);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
