@@ -38,7 +38,7 @@ All collections do not automatically sync across devices. To use export a backup
 
 ## Adding photocards
 
-In order to add an imaage, go to `aespa-images/', then add a row in the `aespa/cards.csv` file. The columns in the csv files are id, member, release, version, image, owned.
+In order to add an imaage, go to `aespa-images/`, then add a row in the `aespa/cards.csv` file. The columns in the csv files are id, member, release, version, image, owned.
 
 Similar to online databases, in order to identify cards, you must give each card a unique identifier (distinct ID). The image file uploaded must match the distinct ID used in the CSV file including its extension (EX: .PNG, .WEBP, .AVIF).
 
