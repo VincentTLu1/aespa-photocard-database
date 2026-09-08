@@ -2,7 +2,7 @@
 
 This is an online website database which utilizes JavaScript, CSS, HTML, and Bootstrap. This database allows the users to browse photocards that they own from various albums and releases.
 
-[Live Demo]https://vincenttlu1.github.io/photocard-database/
+[Live Demo](https://vincenttlu1.github.io/photocard-database/)
 
 
 ## Features
