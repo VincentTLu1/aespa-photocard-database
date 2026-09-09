@@ -8,7 +8,7 @@ This is an online website database which utilizes JavaScript, CSS, HTML, and Boo
 ## Features
 
 - Searches for member, release, and version
-- Filter by member, release, and ownership
+- Filter by member, release, version, and ownership
 - Users can switch between Minimal, Pastel, and Metallic themes
 - Mark available cards with owned and not owned identifiers
 - Save ownership choices within local browser
@@ -49,7 +49,7 @@ The current CSV parser handles data using comma separators. These commas represe
 This project initially started from a Riftbound card inventory template by [Gummyosh1](https://github.com/Gummyosh1/card-database-template).
 
 I modified the original template/catalog for aespa photocards and added:
-- Member and release filters
+- Member, release, version, and ownership filters
 - Collection progress and counts in filtered results
 - Ownership tracking through local browser
 - Three savable unique and selectable themes based on user preference

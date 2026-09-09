@@ -25,6 +25,7 @@ const importCollectionFile = document.getElementById("importCollectionFile");
 const catalogStatus = document.getElementById("catalogStatus");
 const wishlistStorageKey = "aespa-card-wishlist";
 const wishlistFilter = document.getElementById("wishlistFilter");
+const versionFilter = document.getElementById("versionFilter");
 
 try {
   const savedTheme = localStorage.getItem(themestorageKey);
@@ -53,6 +54,7 @@ fetch("aespa/cards.csv")
   .then((csvText) => {
     allCards = parseCSV(csvText);
     populateReleaseFilter(allCards);
+    populateVersionFilter(allCards);
 
     try {
       const savedOwnership = JSON.parse(
@@ -130,9 +132,11 @@ function renderCards(cards) {
 
     const matchesRelease = releaseFilter.value === "all" || card.release === releaseFilter.value;
 
+    const matchesVersion = versionFilter.value === "all" || card.version === versionFilter.value;
+
     const matchesWishlist = !wishlistFilter.checked || card.wishlisted;
     
-    return matchesMember && matchesSearch && matchesOwnership && matchesRelease && matchesWishlist;
+    return matchesMember && matchesSearch && matchesOwnership && matchesRelease && matchesWishlist && matchesVersion;
   });
 
   const sortedCards = sortCardsByNumber(filteredCards);
@@ -160,6 +164,8 @@ function renderCards(cards) {
           src="aespa-images/${card.image}"
           class="card-img"
           alt="${card.member} ${card.release} ${card.version}"
+          loading="lazy"
+          decoding="async"
         >
       </button>
         <div class="card-caption">
@@ -285,6 +291,7 @@ cardRow.addEventListener("click", (event) => {
 });
 
 releaseFilter.addEventListener("change", () => {
+  populateVersionFilter(allCards);
   renderCards(allCards);
 });
 
@@ -292,6 +299,9 @@ resetFilter.addEventListener("click", () => {
   searchBar.value = "";
   activeFilter = "All";
   releaseFilter.value = "all";
+
+  populateVersionFilter(allCards);
+
   ownershipFilter.value = "all";
   wishlistFilter.checked = false;
 
@@ -582,3 +592,27 @@ function saveImportedChoices(ownership, wishlist) {
     throw error;
   }
 }
+
+function populateVersionFilter(cards) {
+  const releaseCards = cards.filter((card) =>
+    releaseFilter.value === "all" || releaseFilter.value
+  );
+
+  const versions = [
+    ...new Set(releaseCards.map((card) => card.version))
+  ].filter((version) => version !== "");
+
+  versions.sort()
+
+  versionFilter.replaceChildren(
+    new Option("All versions", "all")
+  );
+
+  versions.forEach((version) => {
+    versionFilter.add(new Option(version, version));
+  });
+}
+
+versionFilter.addEventListener("change", () => {
+  renderCards(allCards);
+});
