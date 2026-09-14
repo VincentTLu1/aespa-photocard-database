@@ -26,6 +26,7 @@ const catalogStatus = document.getElementById("catalogStatus");
 const wishlistStorageKey = "aespa-card-wishlist";
 const wishlistFilter = document.getElementById("wishlistFilter");
 const versionFilter = document.getElementById("versionFilter");
+const releaseProgressList = document.getElementById("releaseProgressList");
 
 try {
   const savedTheme = localStorage.getItem(themestorageKey);
@@ -216,6 +217,8 @@ function updateTotalCardCount(cards, visibleCount) {
   collectionProgress.value = percent;
 
   collectionProgressText.textContent = `${percent}% completed ~ ${cards.length - ownedCounter} cards remaining`;
+
+  renderReleaseProgress(cards);
 }
 
 function saveOwnership() {
@@ -616,3 +619,54 @@ function populateVersionFilter(cards) {
 versionFilter.addEventListener("change", () => {
   renderCards(allCards);
 });
+
+function renderReleaseProgress(cards) {
+  const releases = new Map();
+
+  cards.forEach((card) => {
+    if (!releases.has(card.release)) {
+      releases.set(card.release, { total: 0, owned: 0 });
+    }
+
+    const counter = releases.get(card.release);
+    counter.total += 1;
+
+    if (card.owned) {
+      counter.owned += 1;
+    }
+  });
+
+  releaseProgressList.replaceChildren();
+
+  const sortedReleases = [...releases.entries()].sort(
+    ([nameA], [nameB]) => nameA.localeCompare(nameB)
+  );
+
+  sortedReleases.forEach(([release, counter]) => {
+    const percentage = Math.round(
+      (counter.owned / counter.total) * 100
+    );
+
+    const row = document.createElement("div");
+    row.className = "release-progress-row";
+
+    const label = document.createElement("div");
+    label.className = "release-progress-label";
+
+    const name = document.createElement("span");
+    name.textContent = release;
+
+    const count = document.createElement("span");
+    count.textContent =
+      `${counter.owned} / ${counter.total} owned ~ ${percentage}%`;
+
+    const progress = document.createElement("progress");
+    progress.max = counter.total;
+    progress.value = counter.owned;
+    progress.setAttribute("aria-label", `${release} collection completion`);
+
+    label.append(name, count);
+    row.append(label, progress);
+    releaseProgressList.append(row);
+  });
+}
