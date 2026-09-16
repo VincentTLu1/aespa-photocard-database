@@ -96,27 +96,82 @@ fetch("aespa/cards.csv")
     console.error("Error loading catalog:", error);
     catalogStatus.hidden = false;
 
-    catalogStatus.textContent = "We couldn't load the card catalog! Please refresh and try again!";
+    catalogStatus.textContent = `Could not load the catalog! Please try again!: ${error.message}`;;
   });
 
 function parseCSV(csvText) {
-  const lines = csvText.trim().split("\n");
+  const lines = csvText.replace(/^\uFEFF/, "").split(/\r?\n/);
+  const requiredFields = [
+    "id", "member", "release", "version", "image", "owned"
+  ];
+  
   const headers = lines[0].split(",").map((header) => header.trim());
 
-  return lines.slice(1).map((line) => {
-    const values = line.split(",");
+  if (
+    headers.some((header) => header === "") ||
+    new Set(headers).size !== headers.length
+  ) {
+    throw new Error("CSV row 1: headers must be nonempty and unique.");
+  }
+
+  requiredFields.forEach((field) => {
+    if (!headers.includes(field)) {
+      throw new Error(`CSV row 1: missing "${field}" column.`);
+    }
+  });
+
+  const seenIds = new Set();
+  const cards = [];
+
+  lines.slice(1).forEach((line, index) => {
+    const rowNumber = index + 2;
+
+    if (line.trim() === "") return;
+
+    const values = line.split(",").map((value) => value.trim());
+
+    if (values.length !== headers.length) {
+      throw new Error(
+        `CSV row ${rowNumber}: expected ${headers.length} columns, ` +
+        `but found ${values.length}.`
+      );
+    }
+
     const card = {};
 
-    headers.forEach((header, index) => {
-      card[header] = values[index]?.trim() || "";
+    headers.forEach((header, columnIndex) => {
+      card[header] = values[columnIndex];
     });
 
-    card.owned = (card.owned || "false").toLowerCase() === "true";
+    requiredFields.forEach((field) => {
+      if (card[field] === "") {
+        throw new Error(
+          `CSV row ${rowNumber}: "${field}" cannot be empty.`
+        );
+      }
+    });
 
+    if (seenIds.has(card.id)) {
+      throw new Error(
+        `CSV row ${rowNumber}: duplicate ID "${card.id}".`
+      );
+    }
+
+    const ownedValue = card.owned.toLowerCase();
+
+    if (!["true", "false"].includes(ownedValue)) {
+      throw new Error(
+        `CSV row ${rowNumber}: owned must be true or false.`
+      );
+    }
+
+    seenIds.add(card.id);
+    card.owned = ownedValue === "true";
     card.wishlisted = false;
-
-    return card;
+    cards.push(card);
   });
+
+  return cards;
 }
 
 function renderCards(cards) {
