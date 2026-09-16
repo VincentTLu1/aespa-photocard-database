@@ -27,6 +27,9 @@ const wishlistStorageKey = "aespa-card-wishlist";
 const wishlistFilter = document.getElementById("wishlistFilter");
 const versionFilter = document.getElementById("versionFilter");
 const releaseProgressList = document.getElementById("releaseProgressList");
+const cardViewerImageError = document.getElementById("cardViewerImageError");
+const SortOrder = document.getElementById("sortOrder");
+const copyFilterLink = document.getElementById("copyFilterLink");
 
 try {
   const savedTheme = localStorage.getItem(themestorageKey);
@@ -55,7 +58,7 @@ fetch("aespa/cards.csv")
   .then((csvText) => {
     allCards = parseCSV(csvText);
     populateReleaseFilter(allCards);
-    populateVersionFilter(allCards);
+    restoreFiltersFromURL();
 
     try {
       const savedOwnership = JSON.parse(
@@ -195,7 +198,7 @@ function renderCards(cards) {
     return matchesMember && matchesSearch && matchesOwnership && matchesRelease && matchesWishlist && matchesVersion;
   });
 
-  const sortedCards = sortCardsByNumber(filteredCards);
+  const sortedCards = sortCards(filteredCards);
   visibleCards = sortedCards;
   updateTotalCardCount(allCards, sortedCards.length);
 
@@ -223,6 +226,9 @@ function renderCards(cards) {
           loading="lazy"
           decoding="async"
         >
+        <span class="image-fallback" hidden>
+          Image Unavailable
+        </span>
       </button>
         <div class="card-caption">
           <strong>${card.member}</strong><br>
@@ -254,8 +260,20 @@ function renderCards(cards) {
   }).join("");
 }
 
-function sortCardsByNumber(cards) {
+function sortCards(cards) {
   return [...cards].sort((a, b) => {
+    if (SortOrder.value === "member") {
+      const memberComparison = a.member.localeCompare(b.member);
+
+      if (memberComparison !== 0) return memberComparison;
+    }
+
+    if (SortOrder.value === "release") {
+      const releaseComparison = a.release.localeCompare(b.release);
+
+      if (releaseComparison !== 0) return releaseComparison;
+    }
+
     return a.id.localeCompare(b.id);
   });
 }
@@ -393,6 +411,10 @@ function openCardViewer(card) {
   if (currentViewerIndex === -1) return;
 
   cardViewerTitle.textContent = `${card.member} ~ ${card.release}`;
+  
+  cardViewerImage.hidden = false;
+  cardViewerImageError.hidden = true;
+
   cardViewerImage.src = `aespa-images/${card.image}`;
 
   cardViewerImage.alt = `${card.member} ${card.release} ${card.version}`;
@@ -729,3 +751,95 @@ function updateMemberButtons() {
     button.setAttribute("aria-pressed", String(selected))
   })
 }
+
+cardRow.addEventListener("error", (event)=> {
+  const image = event.target;
+
+  if (!(image instanceof HTMLImageElement)) return;
+
+  const preview = image.closest(".card-preview");
+
+  if (!preview) return;
+
+  image.hidden = true;
+  preview.querySelector(".image-fallback").hidden = false;
+}, true)
+
+cardViewerImage.addEventListener("error", () => {
+  cardViewerImage.hidden = true;
+  cardViewerImageError.hidden = false;
+});
+
+sortOrder.addEventListener("change", () => {
+  renderCards(allCards);
+});
+
+function selectValidOption(select, value) {
+  const exists = [...select.options].some(
+    (option) => option.value === value
+  );
+
+  if (exists) {
+    select.value = value;
+  }
+}
+
+function restoreFiltersFromURL() {
+  const params = new URLSearchParams(window.location.search);
+  const member = params.get("member");
+
+  const validMember = [...filterButtons].some(
+    (button) => button.dataset.filter === member
+  );
+
+  if (validMember) {
+    activeFilter = member;
+  }
+
+  selectValidOption(releaseFilter, params.get("release"));
+
+  populateVersionFilter(allCards);
+
+  selectValidOption(versionFilter, params.get("version"));
+  selectValidOption(sortOrder, params.get("sort"));
+
+  searchBar.value = params.get("search") || "";
+
+  updateMemberButtons();
+}
+
+copyFilterLink.addEventListener("click", async () => {
+  const url = new URL(window.location.href);
+
+  url.search = "";
+  url.hash = "";
+
+  if (activeFilter !== "All") {
+    url.searchParams.set("member", activeFilter);
+  }
+
+  if (releaseFilter.value !== "all") {
+    url.searchParams.set("release", releaseFilter.value);
+  }
+
+  if (versionFilter.value !== "all") {
+    url.searchParams.set("version", versionFilter.value);
+  }
+
+  if (sortOrder.value !== "id") {
+    url.searchParams.set("sort", sortOrder.value);
+  }
+
+  const search = searchBar.value.trim();
+
+  if (search !== "") {
+    url.searchParams.set("search", search);
+  }
+
+  try {
+    await navigator.clipboard.writeText(url.href);
+    alert("Filter link copied! Ownership and wishlist filters aren’t included.");
+  } catch (error) {
+    window.prompt("Copy this filter link:", url.href);
+  }
+});
