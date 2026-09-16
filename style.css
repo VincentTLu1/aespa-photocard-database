@@ -329,7 +329,7 @@ body {
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 0.5rem;
-  margin-bottom: 0.35 rem;
+  margin-bottom: 0.35rem;
 }
 
 .release-progress-row progress {
@@ -337,4 +337,17 @@ body {
   width: 100%;
   height: 0.8rem;
   accent-color: var(--accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card-custom {
+    transition: none;
+  }
+  .card-custom:hover {
+    transform: none;
+  }
+
+  .animated-bg {
+    animation: none;
+  }
 }

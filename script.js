@@ -257,9 +257,14 @@ searchBar.addEventListener("input", () => {
 
 filterButtons.forEach((button) => {
   button.addEventListener("click", () => {
-    filterButtons.forEach((btn) => btn.classList.remove("active"));
-    button.classList.add("active");
-    activeFilter = button.getAttribute("data-filter");
+    filterButtons.forEach((btn) => {
+      const selected = btn === button;
+
+      btn.classList.toggle("active", selected);
+      btn.setAttribute("aria-pressed", String(selected));
+    });
+
+    activeFilter = button.dataset.filter;
     renderCards(allCards);
   });
 });
@@ -309,10 +314,10 @@ resetFilter.addEventListener("click", () => {
   wishlistFilter.checked = false;
 
   filterButtons.forEach((button) => {
-    button.classList.toggle(
-      "active",
-      button.dataset.filter === "All"
-    );
+  const selected = button.dataset.filter === "All";
+
+  button.classList.toggle("active", selected);
+  button.setAttribute("aria-pressed", String(selected));
   });
 
   renderCards(allCards);
