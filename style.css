@@ -297,7 +297,7 @@ body {
 }
 
 .wishlist-badge {
-  display: incline-block;
+  display: inline-block;
   margin-top: 0.4rem;
   padding: 0.2rem 0.6rem;
   border: 1px solid var(--accent);
@@ -357,10 +357,19 @@ body {
   color: var(--muted-color);
   text-align: center;
   font-size: 0.9rem;
+}
+
+.image-fallback[hidden] {
   display: none;
 }
 
 #cardViewerImage[hidden],
 .card-img[hidden] {
   display: none;
+}
+
+.ownership-badge,
+.wishlist-badge {
+  display: inline-block;
+  white-space: nowrap;
 }

@@ -17,6 +17,7 @@ This is an online website database which utilizes JavaScript, CSS, HTML, and Boo
 - Import and Export collections using JSON files
 - Available layout for desktop and mobile
 - Add wishlist tracking
+- Sharable filter links
 
 ## Photocard Screenshots
 
@@ -58,6 +59,7 @@ I modified the original template/catalog for aespa photocards and added:
 - Increased usability by adding loading messages and error handling
 - Updated response controls (buttons) and badges indicating user ownership
 - Added wishlist tracking with backups
+- Sharable filter links
 
 ## What I learned
 - Filtering, navigating, and rendering data through CSV files

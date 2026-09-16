@@ -28,7 +28,7 @@ const wishlistFilter = document.getElementById("wishlistFilter");
 const versionFilter = document.getElementById("versionFilter");
 const releaseProgressList = document.getElementById("releaseProgressList");
 const cardViewerImageError = document.getElementById("cardViewerImageError");
-const SortOrder = document.getElementById("sortOrder");
+const sortOrder = document.getElementById("sortOrder");
 const copyFilterLink = document.getElementById("copyFilterLink");
 
 try {
@@ -262,13 +262,13 @@ function renderCards(cards) {
 
 function sortCards(cards) {
   return [...cards].sort((a, b) => {
-    if (SortOrder.value === "member") {
+    if (sortOrder.value === "member") {
       const memberComparison = a.member.localeCompare(b.member);
 
       if (memberComparison !== 0) return memberComparison;
     }
 
-    if (SortOrder.value === "release") {
+    if (sortOrder.value === "release") {
       const releaseComparison = a.release.localeCompare(b.release);
 
       if (releaseComparison !== 0) return releaseComparison;
@@ -670,7 +670,7 @@ function saveImportedChoices(ownership, wishlist) {
 
 function populateVersionFilter(cards) {
   const releaseCards = cards.filter((card) =>
-    releaseFilter.value === "all" || releaseFilter.value
+    releaseFilter.value === "all" || card.release === releaseFilter.value
   );
 
   const versions = [
