@@ -257,14 +257,9 @@ searchBar.addEventListener("input", () => {
 
 filterButtons.forEach((button) => {
   button.addEventListener("click", () => {
-    filterButtons.forEach((btn) => {
-      const selected = btn === button;
-
-      btn.classList.toggle("active", selected);
-      btn.setAttribute("aria-pressed", String(selected));
-    });
-
     activeFilter = button.dataset.filter;
+
+    updateMemberButtons();
     renderCards(allCards);
   });
 });
@@ -313,12 +308,7 @@ resetFilter.addEventListener("click", () => {
   ownershipFilter.value = "all";
   wishlistFilter.checked = false;
 
-  filterButtons.forEach((button) => {
-  const selected = button.dataset.filter === "All";
-
-  button.classList.toggle("active", selected);
-  button.setAttribute("aria-pressed", String(selected));
-  });
+  updateMemberButtons();
 
   renderCards(allCards);
 })
@@ -674,4 +664,13 @@ function renderReleaseProgress(cards) {
     row.append(label, progress);
     releaseProgressList.append(row);
   });
+}
+
+function updateMemberButtons() {
+  filterButtons.forEach((button) => {
+    const selected = button.dataset.filter === activeFilter;
+
+    button.classList.toggle("active", selected);
+    button.setAttribute("aria-pressed", String(selected))
+  })
 }
