@@ -99,7 +99,7 @@ fetch("aespa/cards.csv")
     console.error("Error loading catalog:", error);
     catalogStatus.hidden = false;
 
-    catalogStatus.textContent = `Could not load the catalog! Please try again!: ${error.message}`;;
+    catalogStatus.textContent = `Could not load the catalog! Please try again!: ${error.message}`;
   });
 
 function parseCSV(csvText) {
@@ -363,7 +363,6 @@ cardRow.addEventListener("click", (event) => {
     }
 
     renderCards(allCards);
-    //updateTotalCardCount(allCards);
 });
 
 releaseFilter.addEventListener("change", () => {

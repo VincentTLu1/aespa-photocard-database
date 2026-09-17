@@ -68,32 +68,6 @@
   font-size: 1rem;
 }
 
-.animated-bg{
-  background: linear-gradient(
-    135deg,
-    #4059AD,
-    #F4B942,
-    #8AE1FC,
-    #48B8D0,
-    #010400
-  );   
-  border-radius: 20px;
-  background-size: 400% 400%;
-  animation: gradientFlow 15s ease infinite;
-}
-
-@keyframes gradientFlow{
-  0%{
-    background-position: 0% 50%;
-  }
-  50%{
-    background-position: 100% 50%;
-  }
-  100%{
-    background-position: 0% 50%;
-  }
-}
-
 .card-custom{
   width:100%;
   aspect-ratio:5/7;
@@ -113,19 +87,6 @@
     object-fit:cover;
 }
 
-.card-img.rotate-90{
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) rotate(90deg) scale(1.65);
-  transform-origin: center;
-  transition: transform 0.25s ease;
-  max-width: 100%;
-  max-height: 100%;
-  width: auto;
-  height: auto;
-  display: block;
-}
 
 .card-custom:hover{
     transform: translateY(-8px) scale(1.03);
@@ -347,9 +308,6 @@ body {
     transform: none;
   }
 
-  .animated-bg {
-    animation: none;
-  }
 }
 
 .image-fallback {

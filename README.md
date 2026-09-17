@@ -9,6 +9,7 @@ This is an online website database which utilizes JavaScript, CSS, HTML, and Boo
 
 - Searches for member, release, and version
 - Filter by member, release, version, and ownership
+- Sort by catalog order, member, release
 - Users can switch between Minimal, Pastel, and Metallic themes
 - Mark available cards with owned and not owned identifiers
 - Save ownership choices within local browser
@@ -18,10 +19,23 @@ This is an online website database which utilizes JavaScript, CSS, HTML, and Boo
 - Available layout for desktop and mobile
 - Add wishlist tracking
 - Sharable filter links
+- View collection progress overall and by release
+- Share links with the use of catalog filters and sorting
+- Validate the catalog data and includes missing-image fallbacks
 
-## Photocard Screenshots
+## Screenshots
 
-All photocards pictures were taken from [Website Orginal](https://biasroom.com/home)
+### Gallery
+![Gallery with all photocards in the collection](screenshots/gallery.png)
+
+### Card viewer
+![Enlarged photocard with previous and next controls](screenshots/card-viewer.png)
+
+### Filter Search
+![Interface with filters, search menu, and collection badges](screenshots/filters-search.png)
+
+### Mobile
+<img src="screenshots/mobile.png" alt="Mobile collection layout" width="320">
 
 ## How it works
 
@@ -42,7 +56,7 @@ All collections do not automatically sync across devices. To use export a backup
 
 In order to add an imaage, go to `aespa-images/`, then add a row in the `aespa/cards.csv` file. The columns in the csv files are id, member, release, version, image, owned.
 
-Similar to online databases, in order to identify cards, you must give each card a unique identifier (distinct ID). The image file uploaded must match the distinct ID used in the CSV file including its extension (EX: .PNG, .WEBP, .AVIF).
+Similar to online databases, in order to identify cards, you must give each card a unique identifier (distinct ID). Every card contains a unique and stable ID. The `image` value in the CSV file must match the filename in `aespa-images/', which includes the extension (Ex: .PNG, .WEBP, .AVIF). The filename does have to match the card ID.
 
 The current CSV parser handles data using comma separators. These commas represent individual fields from the columns described above.
 
@@ -72,14 +86,15 @@ I modified the original template/catalog for aespa photocards and added:
 
 ## Current Limitations
 - The catalog is currently not up to date with all photocards and is maintained manually
+- The CSV parser only supports simple comma seperated fields. Commas and multlined text values are not supported.
 - Ownership is managed locally through browser and not syncing through accounts (Ex: Google)
 - Local browser cleanup will remove all existing local saved choices
-- Backups only contain ownership data and not images from file
+- Backups only contain ownership data and wishlist choices, but do not include images, theme choices or catalog data.
 - Website is still under development with additional features to come.
 
 ## Credits
-- Orginal Template: [Gummyosh1 / https://github.com/Gummyosh1/card-database-template]
-- Photocard image sources: [https://biasroom.com/home]
+- Orginal Template: [Gummyosh1](https://github.com/Gummyosh1/card-database-template)
+- Photocard image sources: [BiasRoom](https://biasroom.com/home)
 - Built with Bootstrap and Share Tech font
 
 This is an unofficial fan project and is not affiliated with aespa or SM Entertainment.
