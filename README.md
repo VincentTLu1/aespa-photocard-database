@@ -28,14 +28,22 @@ This is an online website database which utilizes JavaScript, CSS, HTML, and Boo
 ### Gallery
 ![Gallery with all photocards in the collection](screenshots/gallery.png)
 
+Browse the catalog and see ownership and wishlist badges.
+
 ### Card viewer
 ![Enlarged photocard with previous and next controls](screenshots/card-viewer.png)
+
+Enlarge and view the collection of cards. Use previous or next controls to browse cards. 
 
 ### Filter Search
 ![Interface with filters, search menu, and collection badges](screenshots/filters-search.png)
 
+Filter the search for release, version, member, ownership, and wishlisted.
+
 ### Mobile
 <img src="screenshots/mobile.png" alt="Mobile collection layout" width="320">
+
+The mobile layout stacks the filters for smaller screens.
 
 ## How it works
 
